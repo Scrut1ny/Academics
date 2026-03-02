@@ -97,7 +97,7 @@
         el.textContent = "\u{1F6E1}\uFE0F " + extractHost(rawMsg);
         logContainer.appendChild(el);
         logCount++;
-        if (logCount > 15) {
+        if (logCount > 20) {
             logContainer.firstChild.remove();
             logCount--;
         }
