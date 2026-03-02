@@ -173,7 +173,7 @@ Math.round((window._timer.endTime - Date.now()) / 60000);
 
 
 - **Speed up timer**
-```
+```javascript
 // Speed up timer — skips forward 1 minute every second (change 60000 to adjust speed)
 window._speedTimer = setInterval(function() {
     window._timer.endTime -= 60000;
