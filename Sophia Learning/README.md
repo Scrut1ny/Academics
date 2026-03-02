@@ -1,3 +1,31 @@
+## Test Blocking:
+
+| Command | Target | Result |
+|---|---|---|
+| `window.dispatchEvent(new Event('focus'));` | Focus suppression | ✅ Blocked |
+| `window.dispatchEvent(new Event('blur'));` | Blur suppression | ✅ Blocked |
+| `document.dispatchEvent(new Event('visibilitychange'));` | Visibility suppression | ✅ Blocked |
+| `jQuery.ajax({ url: '/continue-to-learn', type: 'POST', data: JSON.stringify({ event: 'test_focus_loss' }), contentType: 'application/json' });` | AJAX interceptor | ✅ Blocked |
+| `fetch('https://stats.sophia.org/track').then(r => console.log('Status:', r.status));` | Fetch blocker | ✅ Blocked |
+| `var xhr = new XMLHttpRequest(); xhr.open('GET', 'https://analytics.sophia.org/collect'); xhr.send();` | XHR blocker | ✅ Blocked |
+| `navigator.sendBeacon('https://dpm.demdex.net/id', 'test');` | Beacon blocker | ✅ Blocked |
+| `localStorage.setItem('postponed_form_submit', 'test');` | Storage defense | ✅ Blocked |
+| `localStorage.getItem('postponed_form_submit');` | Storage verification | ✅ Confirmed `null` |
+| `dataLayer.push({ event: 'form_submit', data: 'test' });` | DataLayer trap | ✅ Blocked |
+| `optimizely.push({ type: 'event', eventName: 'test' });` | Optimizely trap | ✅ Blocked |
+| `document.cookie = 'sophia_st=test123; path=/';` | Cookie defense | ✅ Blocked |
+
+
+
+
+
+
+---
+
+
+
+
+
 ### Third party resources Sophia uses:
 - [Copyleaks](https://copyleaks.com/ai-content-detector)
 
