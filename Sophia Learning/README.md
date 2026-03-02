@@ -149,11 +149,7 @@ $.ajax({
 
 
 
-
-<details>
-<summary>Milestone: Timer</summary>
-
-
+## Milestone: Timer
 
 
 
@@ -208,17 +204,6 @@ jQuery('.flexible-assessment-header__submit-timer-minutes b').text(Math.round((w
 
 </details>
 
-
-
-
-
-
-
-
-
-
-
-</details>
 
 
 
