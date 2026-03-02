@@ -102,7 +102,7 @@ When you answer a question, here's what happens under the hood:
 </details>
 
 <details>
-<summary>Exploiting This</summary>
+<summary>Exploiting</summary>
 
 We can send a dummy answer (`answer: 0`) to the server, and instead of rendering the result, we **intercept the response** to find which answer has `correct: true` — then auto-select it before actually submitting.
 
@@ -140,3 +140,88 @@ $.ajax({
 </details>
 
 > **Note:** The probe request consumes one attempt. This is only useful for **Challenges** where you need to preserve attempts — Milestones don't track attempts.
+
+
+
+
+
+---
+
+
+
+
+<details>
+<summary>Milestone: Timer</summary>
+
+
+
+
+
+
+
+<details>
+<summary>⏱️ Timer Controls</summary>
+
+- **Add Time** *(change `60` to desired minutes)*
+```javascript
+window._timer.endTime += 60 * 60 * 1000;
+```
+
+- **Subtract Time** *(change `10` to desired minutes)*
+```javascript
+window._timer.endTime -= 10 * 60 * 1000;
+```
+
+- **Pause Timer**
+```javascript
+window._pauseTimer = setInterval(function() {
+    window._timer.endTime += 1000;
+}, 1000);
+```
+
+- **Unpause Timer**
+```javascript
+clearInterval(window._pauseTimer);
+```
+
+- **Reset to Full Time**
+```javascript
+window._timer.endTime = new Date().getTime() + window._timer.totalTime * 60 * 1000;
+```
+
+- **Set Specific Minutes Remaining** *(change `45` to desired minutes)*
+```javascript
+window._timer.endTime = new Date().getTime() + 45 * 60 * 1000;
+```
+
+- **Check Time Remaining**
+```javascript
+var mins = Math.round((window._timer.endTime - new Date().getTime()) / 60000);
+console.log(mins + ' minutes remaining');
+```
+
+- **Force Visual Refresh** *(run after any change for instant update)*
+```javascript
+window._timer.circles(window._timer.s, Math.round((window._timer.endTime - new Date().getTime()) / 60000));
+jQuery('.flexible-assessment-header__submit-timer-minutes b').text(Math.round((window._timer.endTime - new Date().getTime()) / 60000));
+```
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+</details>
+
+
+
+
+
+
