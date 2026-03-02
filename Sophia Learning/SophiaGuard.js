@@ -199,22 +199,22 @@
     // --- ACTIVITY / FOCUS / BLUR TRACKING SUPPRESSION ---
     const patchActivityTracking = () => {
         // Layer 1: Suppress DOM events so Sophia's JS never fires the AJAX calls
-        document.addEventListener("visibilitychange", (e) => {
-            pushLog(`visibilitychange: ${document.visibilityState}`);
+        w.document.addEventListener("visibilitychange", (e) => {
+            pushLog(`visibilitychange: ${w.document.visibilityState}`);
             e.stopImmediatePropagation();
         }, true);
 
         w.addEventListener("blur", (e) => {
-            pushLog("window blur");
+            if (e.target === w) pushLog("window blur");
             e.stopImmediatePropagation();
         }, true);
 
         w.addEventListener("focus", (e) => {
-            pushLog("window focus");
+            if (e.target === w) pushLog("window focus");
             e.stopImmediatePropagation();
         }, true);
 
-        document.addEventListener("beforeunload", (e) => {
+        w.document.addEventListener("beforeunload", (e) => {
             pushLog("beforeunload");
             e.stopImmediatePropagation();
         }, true);
