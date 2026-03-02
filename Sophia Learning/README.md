@@ -2,7 +2,7 @@
 
 | Command | Target | Result |
 |---|---|---|
-| ```window.dispatchEvent(new Event('focus'));``` | Focus suppression | ✅ Blocked |
+| `window.dispatchEvent(new Event('focus'));` | Focus suppression | ✅ Blocked |
 | `window.dispatchEvent(new Event('blur'));` | Blur suppression | ✅ Blocked |
 | `document.dispatchEvent(new Event('visibilitychange'));` | Visibility suppression | ✅ Blocked |
 | `jQuery.ajax({ url: '/continue-to-learn', type: 'POST', data: JSON.stringify({ event: 'test_focus_loss' }), contentType: 'application/json' });` | AJAX interceptor | ✅ Blocked |
