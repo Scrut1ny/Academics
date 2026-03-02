@@ -2,7 +2,7 @@
 // @name        Sophia Guard
 // @namespace   https://github.com/Scrut1ny
 // @match       https://*.sophia.org/*
-// @version     30.0
+// @version     31.0
 // @author      Scrut1ny
 // @description Copies Q&A & blocks all tracking in real-time
 // @icon        https://app.sophia.org/favicon.ico
@@ -54,21 +54,19 @@
 
     // --- STATE ---
     let logContainer = null;
+    let logCount = 0;
     let activeToast = null;
     let lastCopiedHash = 0;
     let lastRawText = "";
     let extractTimeout = null;
     let toastTimer = null;
     let initialized = false;
-    
-    const MAX_LOGS = 8;
-    
+
     // --- UI ---
     const ROOT = document.documentElement;
-    
+
     const injectStyles = () => {
         if (document.getElementById("hp-styles")) return;
-    
         const style = document.createElement("style");
         style.id = "hp-styles";
         style.textContent =
@@ -77,65 +75,48 @@
             ".hp-toast{position:fixed;bottom:16px;left:16px;padding:8px 12px;background:#1a1a1a;color:#4dff88;border:1px solid #333;border-left:3px solid #4dff88;border-radius:4px;font-size:20px;font-family:Consolas,monospace;z-index:2147483647;font-weight:bold;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.5);animation:hp-slide-in-left .3s ease forwards}" +
             "@keyframes hp-fade{0%{opacity:0;transform:translateY(10px)}5%{opacity:1;transform:translateY(0)}85%{opacity:1;transform:translateY(-5px)}100%{opacity:0;transform:translateY(-20px)}}" +
             "@keyframes hp-slide-in-left{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}";
-    
         (document.head || ROOT).appendChild(style);
     };
-    
+
     const extractHost = (str) => {
         const s = str.indexOf("://");
         if (s === -1) return str;
-    
         const start = s + 3;
         const end = str.indexOf("/", start);
-    
-        return end === -1
-            ? str.slice(start)
-            : str.substring(start, end);
+        return end === -1 ? str.slice(start) : str.substring(start, end);
     };
-    
+
     const pushLog = (rawMsg) => {
         if (!logContainer) {
             logContainer = document.createElement("div");
             logContainer.id = "hp-log-container";
             document.body.appendChild(logContainer);
         }
-    
         const el = document.createElement("div");
         el.className = "hp-log";
         el.textContent = "\u{1F6E1}\uFE0F " + extractHost(rawMsg);
-    
         logContainer.appendChild(el);
-    
-        while (logContainer.children.length > MAX_LOGS) {
-            logContainer.firstElementChild.remove();
+        logCount++;
+        if (logCount > 15) {
+            logContainer.firstChild.remove();
+            logCount--;
         }
-    
         el.addEventListener("animationend", () => {
-            if (el.isConnected) {
-                el.remove();
-            }
+            el.remove();
+            logCount--;
         }, { once: true });
     };
-    
+
     const toast = (msg) => {
-        if (activeToast) {
-            activeToast.remove();
-            activeToast = null;
-        }
-    
+        if (activeToast) activeToast.remove();
         clearTimeout(toastTimer);
-    
         const el = document.createElement("div");
         el.className = "hp-toast";
         el.textContent = msg;
-    
         document.body.appendChild(el);
         activeToast = el;
-    
         toastTimer = setTimeout(() => {
-            if (el.isConnected) {
-                el.remove();
-            }
+            el.remove();
             activeToast = null;
         }, 2500);
     };
@@ -213,6 +194,68 @@
                 configurable: false
             });
         }
+    };
+
+    // --- ACTIVITY / FOCUS / BLUR TRACKING SUPPRESSION ---
+    const patchActivityTracking = () => {
+        // Layer 1: Suppress DOM events so Sophia's JS never fires the AJAX calls
+        document.addEventListener("visibilitychange", (e) => {
+            pushLog(`visibilitychange: ${document.visibilityState}`);
+            e.stopImmediatePropagation();
+        }, true);
+
+        w.addEventListener("blur", (e) => {
+            pushLog("window blur");
+            e.stopImmediatePropagation();
+        }, true);
+
+        w.addEventListener("focus", (e) => {
+            pushLog("window focus");
+            e.stopImmediatePropagation();
+        }, true);
+
+        document.addEventListener("beforeunload", (e) => {
+            pushLog("beforeunload");
+            e.stopImmediatePropagation();
+        }, true);
+
+        // Layer 2: Intercept jQuery.ajax as a safety net for continue-to-learn calls
+        const hookJQuery = (jq) => {
+            if (!jq || !jq.ajax || jq.__sgPatched) return;
+            jq.__sgPatched = true;
+            const origAjax = jq.ajax;
+            jq.ajax = function (settings) {
+                if (typeof settings === "object" && settings.url && settings.url.indexOf("continue-to-learn") > -1) {
+                    let data = settings.data;
+                    if (typeof data === "string") { try { data = JSON.parse(data); } catch (e) {} }
+                    const evt = data && data.event ? data.event : "unknown";
+                    pushLog(`AJAX blocked: ${evt}`);
+                    return jq.Deferred().resolve().promise();
+                }
+                return origAjax.apply(this, arguments);
+            };
+        };
+
+        hookJQuery(w.jQuery);
+        hookJQuery(w.$);
+
+        let _jq = w.jQuery;
+        try {
+            Object.defineProperty(w, "jQuery", {
+                configurable: true,
+                get: () => _jq,
+                set: (val) => { _jq = val; hookJQuery(val); }
+            });
+        } catch (e) {}
+
+        let _$ = w.$;
+        try {
+            Object.defineProperty(w, "$", {
+                configurable: true,
+                get: () => _$,
+                set: (val) => { _$ = val; hookJQuery(val); }
+            });
+        } catch (e) {}
     };
 
     // --- TRACKING INTERCEPTION ---
@@ -443,6 +486,7 @@
         injectStyles();
         patchTracking();
         patchNetwork();
+        patchActivityTracking();
         patchLocalStorage();
         activateCookieDefense();
         extractAndCopy();
