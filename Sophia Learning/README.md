@@ -158,6 +158,31 @@ $.ajax({
 <details>
 <summary>⏱️ Timer Controls</summary>
 
+- **Total time:**
+```javascript
+window._timer.totalTime
+```
+
+- **Remaining time:**
+```javascript
+Math.round((window._timer.endTime - Date.now()) / 60000);
+```
+
+
+
+
+
+- **Speed up timer**
+```
+// Speed up timer — skips forward 1 minute every second (change 60000 to adjust speed)
+window._speedTimer = setInterval(function() {
+    window._timer.endTime -= 60000;
+}, 1000);
+
+
+clearInterval(window._speedTimer); // Stop it
+```
+
 - **Add Time** *(change `60` to desired minutes)*
 ```javascript
 window._timer.endTime += 60 * 60 * 1000;
