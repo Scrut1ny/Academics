@@ -335,7 +335,7 @@ https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-480
 
 ---
 
-## Exam/Test
+## Testing Software
 
 | 💻 Software | 🌐 Browser Extension | 🧪 System Test | ⬇️ Download |
 |:-----------:|:--------------------:|:--------------:|:-----------:|
