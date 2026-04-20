@@ -23,7 +23,7 @@
   - [Program Guide](https://www.wgu.edu/online-it-degrees/information-technology-bachelors-program/accelerated/program-guide.html)
 
 - WGU Third-party Partners
-  - https://partners.wgu.edu/home
+  - [Partners](https://partners.wgu.edu/home)
     - `Sophia Learning LLC` + `WGU` + `BS Information Technology` = [Available ACE Approved courses](https://partners.wgu.edu/transfer-pathway-agreement?uniqueId=BSIT7110&collegeCode=IT&instId=796&programId=235)
     - `Study.com` + `WGU` + `BS Information Technology` = [Available ACE Approved courses](https://partners.wgu.edu/transfer-pathway-agreement?uniqueId=BSIT4424&collegeCode=IT&instId=678&programId=235)
 
